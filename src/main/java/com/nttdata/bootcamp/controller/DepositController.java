@@ -74,7 +74,7 @@ public class DepositController {
 	@CircuitBreaker(name = "deposits", fallbackMethod = "fallBackGetDeposits")
 	@PutMapping("/updateDeposit/{numberTransaction}")
 	public Mono<Deposit> updateDeposit(@PathVariable("numberTransaction") String numberTransaction,
-										   @Valid @RequestBody Deposit dataDeposit) {
+									   @Valid @RequestBody Deposit dataDeposit) {
 		Mono.just(dataDeposit).doOnNext(t -> {
 
 					t.setDepositNumber(numberTransaction);
@@ -99,9 +99,9 @@ public class DepositController {
 	}
 
 	@GetMapping("/getCommissionsDeposit/{accountNumber}")
-	public Flux<Deposit> getCommissionsDeposit(@PathVariable("accountNumber") String accountNumber) {
+	public Flux<Deposit> getCommissionsDepositByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
 		Flux<Deposit> commissions = depositService.findByCommission(accountNumber);
-		LOGGER.info("Registered commissions deposits of account number: "+accountNumber +"-" + commissions);
+		LOGGER.info("List commissions of account number: "+accountNumber +"-" + commissions);
 		return commissions;
 	}
 
