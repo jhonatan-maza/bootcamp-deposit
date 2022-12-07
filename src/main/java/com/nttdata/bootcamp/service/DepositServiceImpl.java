@@ -72,6 +72,14 @@ public class DepositServiceImpl implements DepositService {
         }
     }
 
+    @Override
+    public Flux<Deposit> findByCommission(String accountNumber) {
+        Flux<Deposit> transactions = depositRepository
+                .findAll()
+                .filter(x -> x.getCommission()>0);
+        return transactions;
+    }
+
 
 
 

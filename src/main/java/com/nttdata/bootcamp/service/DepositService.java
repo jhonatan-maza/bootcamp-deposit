@@ -15,4 +15,7 @@ public interface DepositService {
     public Mono<Deposit> updateDeposit(Deposit dataActive);
     public Mono<Void> deleteDeposit(String accountNumber);
 
+    public Flux<Deposit> findByCommission(String accountNumber);
+
+
 }

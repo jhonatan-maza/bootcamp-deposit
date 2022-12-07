@@ -48,10 +48,18 @@ public class DepositController {
 
 	//Save deposit
 	@CircuitBreaker(name = "deposits", fallbackMethod = "fallBackGetDeposits")
-	@PostMapping(value = "/saveDeposits")
-	public Mono<Deposit> saveDeposits(@RequestBody Deposit dataDeposit){
-		Mono.just(dataDeposit).doOnNext(t -> {
+	@PostMapping(value = "/saveDeposits/{commission}/{count}")
+	public Mono<Deposit> saveDeposits(@RequestBody Deposit dataDeposit,@PathVariable("commission") Double commission,
+									  @PathVariable("count") Long count){
+		Mono<Long> countMovementsMono = getCountDeposits(dataDeposit.getAccountNumber());
+		Long countMovementS =countMovementsMono.block();
 
+		Mono.just(dataDeposit).doOnNext(t -> {
+					if(countMovementS>count)
+						t.setCommission(commission);
+					else
+						t.setCommission(new Double("0.00"));
+					t.setTypeAccount("passive");
 					t.setCreationDate(new Date());
 					t.setModificationDate(new Date());
 
@@ -88,6 +96,13 @@ public class DepositController {
 		Mono<Void> delete = depositService.deleteDeposit(numberTransaction);
 		return delete;
 
+	}
+
+	@GetMapping("/getCommissionsDeposit/{accountNumber}")
+	public Flux<Deposit> getCommissionsDeposit(@PathVariable("accountNumber") String accountNumber) {
+		Flux<Deposit> commissions = depositService.findByCommission(accountNumber);
+		LOGGER.info("Registered commissions deposits of account number: "+accountNumber +"-" + commissions);
+		return commissions;
 	}
 
 
